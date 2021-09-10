@@ -1,0 +1,67 @@
+
+  .navbar {
+    display:inline;
+    align-items: center;
+    height: 50px;
+    width: 100%;
+    justify-content: flex-start!important;
+  }
+
+  body{
+    margin: 0;
+  }
+  
+  .navbar a {
+    margin-right: 16px;
+  }
+
+  .nav {
+    border-style: none none outset none; background-color: cornflowerblue; position: sticky; top: 0; width: 100%; opacity: 0.8;
+  }
+
+  .dropDownButton{
+    position: fixed;
+    top: 10px;
+    left: 10px;
+}
+
+.startPage{
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    text-decoration: none;
+    color: black;
+}
+
+#listDropDown{
+    position: fixed;
+    left: 10px;
+    top: 50px;
+}
+
+.wrapper{
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    background-image: url(../img/bg.jpg);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+.nav li {
+}
+
+.nav-link{
+    text-decoration: none;
+    color: black;
+}
+
+.nav-link:hover{
+    text-decoration: none;
+    color: grey;
+}
+
+.cursor-pointer{
+  cursor: pointer;
+}
