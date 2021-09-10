@@ -1,9 +1,11 @@
-module Api.CourseApi exposing (Course, decoder, Courses ,get, delete)
+module Api.CourseApi exposing (Course, decoder, Courses ,get, delete, create)
 import Json.Decode as Json
 import Utils.Json exposing (withField)
 import Api.Data exposing (Data)
 import Http
 import Api.Token as Token
+import Json.Encode as Encode
+
 
 type alias Courses = 
     List Course
@@ -46,3 +48,28 @@ delete options =
 coursesDecoder : Json.Decoder Courses
 coursesDecoder =
    Json.list decoder
+
+
+create :
+    { course :
+        { course
+            | name : String
+        }
+    , onResponse : Data Course -> msg
+    }
+    -> Cmd msg
+create options =
+    let
+        body : Json.Value
+        body =
+            Encode.object
+                [
+                        ( "name", Encode.string options.course.name )
+                ]
+    in
+    Token.post Nothing
+        { url = "http://localhost:8080/api/courses"
+        , body = Http.jsonBody body
+        , expect =
+            Api.Data.expectJson options.onResponse decoder
+        }

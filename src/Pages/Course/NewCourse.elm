@@ -23,13 +23,17 @@ import Html.Attributes exposing (disabled)
 import Html.Attributes exposing (value, min)
 import Html.Events exposing (onInput)
 import Html.Attributes exposing (style)
+import Api.CourseApi
+import Utils.Route
+import Request exposing (Request)
+import Api.CourseApi exposing (Course)
 
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
     Page.element
         { init = init
-        , update = update
+        , update = update req
         , view = view
         , subscriptions = subscriptions
         }
@@ -42,13 +46,15 @@ page shared req =
 type alias Model =
     { 
       myDrop1State : Dropdown.State,
-      name: String
+      name: String,
+      course: Maybe (Data Course)
+
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {myDrop1State = Dropdown.initialState, name= ""}, Cmd.none )
+    ( {myDrop1State = Dropdown.initialState, name= "", course = Nothing}, Cmd.none )
 
 
 
@@ -56,10 +62,10 @@ init =
 
 
 type Msg
-    = MyDrop1Msg Dropdown.State | ChangedName String
+    = MyDrop1Msg Dropdown.State | ChangedName String | SubmittedForm | GotCourse (Data Course)
 
-update : Msg -> Model -> ( Model, Cmd msg )
-update msg model =
+update : Request -> Msg -> Model -> ( Model, Cmd Msg )
+update req msg model =
     case msg of
         MyDrop1Msg state ->
             ( { model | myDrop1State = state }
@@ -67,6 +73,24 @@ update msg model =
             )
         ChangedName name ->
             ({model | name = name}, Cmd.none)
+        SubmittedForm ->
+            ( model
+            , Api.CourseApi.create
+                { course =
+                    { name = model.name
+                    }
+                , onResponse = GotCourse
+                }
+            )
+        GotCourse course ->   
+            ( { model | course = Just course }
+            , case course of
+                Api.Data.Success newCourse ->
+                    Utils.Route.navigate req.key
+                    (Route.Course__Courses)
+                _ ->
+                    Cmd.none
+            )
 
 
 -- SUBSCRIPTIONS
@@ -104,14 +128,14 @@ okButton model =
     if  model.name == ""  then
         div[][
             button[class "btn btn-success mr-2" , disabled True][text "Ok"],
-            a [ href (Route.toHref Route.Payment__Payments)] [
+            a [ href (Route.toHref Route.Document__NewDocument)] [
             button[class "btn btn-primary" ][text "Cancel"]],
             div[][text "Molimo unesite sve podatke!"]
         ]
 
     else
         div[][
-            button[class "btn btn-success mr-2"][text "Ok"],
-            a [ href (Route.toHref Route.Payment__Payments)] [
+            button[class "btn btn-success mr-2", onClick SubmittedForm][text "Ok"],
+            a [ href (Route.toHref Route.Document__NewDocument)] [
             button[class "btn btn-primary" ][text "Cancel"]]
         ]

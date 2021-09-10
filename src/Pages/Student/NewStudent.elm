@@ -20,13 +20,16 @@ import Html.Attributes exposing (disabled)
 import Html.Attributes exposing (value, min)
 import Html.Events exposing (onInput)
 import Html.Attributes exposing (style)
+import Request exposing (Request)
+import Utils.Route
+import Api.Data exposing (Data)
 
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
     Page.element
         { init = init
-        , update = update
+        , update = update req
         , view = view
         , subscriptions = subscriptions
         }
@@ -42,13 +45,15 @@ type alias Model =
       ime: String,
       prezime: String,
       lozinka: String,
-      relozinka: String
+      relozinka: String,
+      student: Maybe (Data Student)
+
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {ime = "",prezime= "", lozinka = "", relozinka = ""}, Cmd.none )
+    ( {ime = "",prezime= "", lozinka = "", relozinka = "", student = Nothing}, Cmd.none )
 
 
 
@@ -56,11 +61,11 @@ init =
 
 
 type Msg
-    =  ChangedIme String | ChangedPrezime String | ChangedLozinka String | ChangedRelozinka String
+    =  ChangedIme String | ChangedPrezime String | ChangedLozinka String | ChangedRelozinka String | SubmittedForm | GotStudent (Data Student)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Request-> Msg -> Model -> ( Model, Cmd Msg )
+update req msg model =
     case msg of
         ChangedIme ime ->
             ({model | ime = ime}, Cmd.none)
@@ -70,7 +75,26 @@ update msg model =
             ({model | lozinka = lozinka}, Cmd.none)
         ChangedRelozinka relozinka ->
             ({model | relozinka = relozinka}, Cmd.none)
-        
+        SubmittedForm ->
+            ( model
+            , Api.StudentApi.create
+                { student =
+                    { firstName = model.ime
+                    , lastName = model.prezime
+                    , password = model.lozinka
+                    }
+                , onResponse = GotStudent
+                }
+            )
+        GotStudent student ->   
+            ( { model | student = Just student }
+            , case student of
+                Api.Data.Success newStudent ->
+                    Utils.Route.navigate req.key
+                    (Route.Student__Students)
+                _ ->
+                    Cmd.none
+            )        
 
 
 
@@ -103,13 +127,14 @@ view model =
                 ],
                 div[class "form-group"][
                     label[][text "Lozinka"],
-                    input[type_ "text", class "form-control", value model.lozinka, onInput ChangedLozinka ][]
+                    input[type_ "password", class "form-control", value model.lozinka, onInput ChangedLozinka ][],
+                    passmess model
                 ],
                 div[class "form-group"][
                     label[][text "Ponovi Lozinku"],
-                    input[type_ "text", class "form-control", value model.relozinka, onInput ChangedRelozinka ][]
+                    input[type_ "password", class "form-control", value model.relozinka, onInput ChangedRelozinka ][],
+                    passmess model
                 ]
-
             ],
             div[class "modal-footer"][
                 okButton model
@@ -119,7 +144,7 @@ view model =
 
 okButton : Model -> Html Msg
 okButton model =
-    if  model.ime == "" || model.prezime == "" || model.lozinka == "" || model.relozinka == ""  then
+    if  model.ime == "" || model.prezime == "" || model.lozinka == "" || model.relozinka == "" || String.length model.lozinka < 8 || model.lozinka /= model.relozinka  then
         div[][
             button[class "btn btn-success mr-2" , disabled True][text "Ok"],
             a [ href (Route.toHref Route.Payment__Payments)] [
@@ -129,7 +154,16 @@ okButton model =
 
     else
         div[][
-            button[class "btn btn-success mr-2"][text "Ok"],
+            button[class "btn btn-success mr-2", onClick SubmittedForm][text "Ok"],
             a [ href (Route.toHref Route.Payment__Payments)] [
             button[class "btn btn-primary" ][text "Cancel"]]
         ]
+passmess : Model -> Html Msg
+passmess model =
+    if  String.length model.lozinka < 8  then
+        p[][text "Lozinka mora da ima minimum 8 karaktera"]
+
+    else if model.lozinka /= model.relozinka then
+        p[][text "Lozinke se ne podudaraju"]
+    else
+        text ""

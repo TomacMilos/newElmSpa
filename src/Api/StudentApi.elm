@@ -1,9 +1,10 @@
-module Api.StudentApi exposing (Student, decoder, Students ,get, delete)
+module Api.StudentApi exposing (Student, decoder, Students ,get, delete, create)
 import Json.Decode as Json
 import Utils.Json exposing (withField)
 import Api.Data exposing (Data)
 import Http
 import Api.Token as Token
+import Json.Encode as Encode
 
 
 
@@ -52,3 +53,32 @@ delete options =
 allStudentsDecoder : Json.Decoder Students
 allStudentsDecoder =
         Json.list decoder
+
+create :
+    { student :
+        { student
+            | firstName : String
+            , lastName : String
+            , password : String
+        }
+    , onResponse : Data Student -> msg
+    }
+    -> Cmd msg
+
+create options =
+    let
+        body : Json.Value
+        body =
+            Encode.object
+                [
+                        ( "firstName", Encode.string options.student.firstName )
+                        , ( "lastName", Encode.string options.student.lastName )
+                        , ( "password", Encode.string options.student.password)
+                ]
+    in
+    Token.post Nothing
+        { url = "http://localhost:8080/api/user/registerStudent/"++options.student.password++"/"++options.student.firstName ++ "/"++options.student.lastName
+        , body = Http.jsonBody body
+        , expect =
+            Api.Data.expectJson options.onResponse decoder
+        }

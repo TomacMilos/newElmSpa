@@ -20,13 +20,19 @@ import Html.Attributes exposing (disabled)
 import Html.Attributes exposing (value, min)
 import Html.Events exposing (onInput)
 import Html.Attributes exposing (style)
+import Api.Data exposing (Data)
+import Api.TeacherApi exposing (Teacher)
+import Utils.Route
+import Api.Data exposing (Data)
+import Request exposing (Request)
+
 
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
     Page.element
         { init = init
-        , update = update
+        , update = update req
         , view = view
         , subscriptions = subscriptions
         }
@@ -44,13 +50,15 @@ type alias Model =
       korisnickoIme: String,
       lozinka: String,
       relozinka: String,
-      myDrop1State : Dropdown.State
+      myDrop1State : Dropdown.State,
+      teacher: Maybe (Data Teacher)
+
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { myDrop1State = Dropdown.initialState, ime = "",prezime= "", lozinka = "", relozinka = "", uloga ="Izaberi Ulogu", korisnickoIme = ""}, Cmd.none )
+    ( { myDrop1State = Dropdown.initialState, ime = "",prezime= "", lozinka = "", relozinka = "", uloga ="Izaberi Ulogu", korisnickoIme = "", teacher = Nothing}, Cmd.none )
 
 
 
@@ -58,11 +66,11 @@ init =
 
 
 type Msg
-    =  ChangedIme String | ChangedPrezime String | ChangedLozinka String | ChangedRelozinka String | ChangedUloga String | ChangedKorisnickoIme String | MyDrop1Msg Dropdown.State
+    =  ChangedIme String | ChangedPrezime String | ChangedLozinka String | ChangedRelozinka String | ChangedUloga String | ChangedKorisnickoIme String | MyDrop1Msg Dropdown.State | SubmittedForm | GotTeacher (Data Teacher)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Request -> Msg -> Model -> ( Model, Cmd Msg )
+update req msg model =
     case msg of
         MyDrop1Msg state ->
             ( { model | myDrop1State = state }
@@ -80,7 +88,28 @@ update msg model =
             ({model | uloga = uloga}, Cmd.none)
         ChangedKorisnickoIme korisnickoIme ->
             ({model | korisnickoIme = korisnickoIme}, Cmd.none)
-
+        SubmittedForm ->
+            ( model
+            , Api.TeacherApi.create
+                { teacher =
+                    { firstName = model.ime
+                    , lastName = model.prezime
+                    , password = model.lozinka
+                    , teacherRank = model.uloga
+                    , userName = model.korisnickoIme
+                    }
+                , onResponse = GotTeacher
+                }
+            )
+        GotTeacher teacher ->   
+            ( { model | teacher = Just teacher }
+            , case teacher of
+                Api.Data.Success newTeacher ->
+                    Utils.Route.navigate req.key
+                    (Route.Teacher__Teachers)
+                _ ->
+                    Cmd.none
+            )      
 
 
 -- SUBSCRIPTIONS
@@ -135,11 +164,15 @@ view model =
                 ],
                 div[class "form-group"][
                     label[][text "Lozinka"],
-                    input[type_ "text", class "form-control", value model.lozinka, onInput ChangedLozinka ][]
+                    input[type_ "password", class "form-control", value model.lozinka, onInput ChangedLozinka ][],
+                    passmess model
+
                 ],
                 div[class "form-group"][
                     label[][text "Ponovi Lozinku"],
-                    input[type_ "text", class "form-control", value model.relozinka, onInput ChangedRelozinka ][]
+                    input[type_ "password", class "form-control", value model.relozinka, onInput ChangedRelozinka ][],
+                    passmess model
+
                 ]
 
             ],
@@ -151,7 +184,7 @@ view model =
 
 okButton : Model -> Html Msg
 okButton model =
-    if  model.ime == "" || model.prezime == "" || model.lozinka == "" || model.relozinka == "" || model.uloga == "Izaberi Ulogu" || model.korisnickoIme == ""  then
+    if  model.ime == "" || model.prezime == "" || model.lozinka == "" || model.relozinka == "" || model.uloga == "Izaberi Ulogu" || model.korisnickoIme == "" || String.length model.lozinka < 8 || model.lozinka /= model.relozinka then
         div[][
             button[class "btn btn-success mr-2" , disabled True][text "Ok"],
             a [ href (Route.toHref Route.Payment__Payments)] [
@@ -161,7 +194,17 @@ okButton model =
 
     else
         div[][
-            button[class "btn btn-success mr-2"][text "Ok"],
+            button[class "btn btn-success mr-2" , onClick SubmittedForm][text "Ok"],
             a [ href (Route.toHref Route.Payment__Payments)] [
             button[class "btn btn-primary" ][text "Cancel"]]
         ]
+
+passmess : Model -> Html Msg
+passmess model =
+    if  String.length model.lozinka < 8  then
+        p[][text "Lozinka mora da ima minimum 8 karaktera"]
+
+    else if model.lozinka /= model.relozinka then
+        p[][text "Lozinke se ne podudaraju"]
+    else
+        text ""
