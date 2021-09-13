@@ -1,4 +1,4 @@
-module Api.ExamPeriodApi exposing (ExamPeriod, decoder, ExamPeriods ,get, delete)
+module Api.ExamPeriodApi exposing (ExamPeriod, decoder, ExamPeriods ,get, delete, create, getById)
 import Json.Decode as Json
 import Utils.Json exposing (withField)
 import Api.Data exposing (Data)
@@ -6,6 +6,8 @@ import Http
 import Api.Token as Token
 import Iso8601
 import Time
+import Json.Encode as Encode
+
 
 
 
@@ -38,6 +40,7 @@ get options =
         , expect =
             Api.Data.expectJson options.onResponse examPeriodDecoder
         }
+
 delete :
     {   examPeriodId : Int,
         onResponse : Data Int -> msg
@@ -53,3 +56,45 @@ delete options =
 examPeriodDecoder : Json.Decoder ExamPeriods
 examPeriodDecoder =
         Json.list decoder
+
+create :
+    { examPeriod :
+        { examPeriod
+            | name : String,
+            startDate: String,
+            endDate: String
+        }
+    , onResponse : Data ExamPeriod -> msg
+    }
+    -> Cmd msg
+create options =
+    let
+        body : Json.Value
+        body =
+            Encode.object
+                [
+                        ( "name", Encode.string options.examPeriod.name),
+                        ( "startDate", Encode.string options.examPeriod.startDate),
+                        ( "endDate", Encode.string options.examPeriod.startDate )
+
+                ]
+    in
+    Token.post Nothing
+        { url = "http://localhost:8080/api/examPeriods"
+        , body = Http.jsonBody body
+        , expect =
+            Api.Data.expectJson options.onResponse decoder
+        }
+
+
+getById :
+    {   examPeriodId : String,
+        onResponse : Data ExamPeriod -> msg
+    }
+    -> Cmd msg
+getById options =
+        Http.get
+        { url = "http://localhost:8080/api/examPeriods/" ++ options.examPeriodId
+        , expect =
+            Api.Data.expectJson options.onResponse decoder
+        }

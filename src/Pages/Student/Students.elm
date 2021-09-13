@@ -9,13 +9,10 @@ import UI
 import View exposing (View)
 import Html exposing (..)
 import Html exposing (Html)
-import Html.Attributes exposing (class)
-import Html.Attributes exposing (href)
+import Html.Attributes exposing (class, href, style)
 import Api.Data exposing (Data)
 import Api.StudentApi exposing (..)
-
 import Html.Events exposing (onClick)
-
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
@@ -26,14 +23,15 @@ page shared req =
         , subscriptions = subscriptions
         }
 
-
 type alias Model =
-    { students : Data Students
+    { 
+      students : Data Students
     }
 
 init : (Model, Cmd Msg)
 init =
-    ( {
+    ( 
+      {
         students = Api.Data.Loading
       }
     , Cmd.batch
@@ -45,10 +43,10 @@ init =
     )
 
 -- UPDATE
-
-
 type Msg
-  = GotStudents (Data Students) |  DeletedStudent (Data Int) |  ClickedDeleteStudent Student
+  = GotStudents (Data Students) 
+  |  DeletedStudent (Data Int) 
+  |  ClickedDeleteStudent Student
   
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -75,11 +73,7 @@ update msg model =
             , Cmd.none
             )
 
-
-
 -- VIEW
-
-
 view : Model -> View Msg
 view model =
       { title = "Studenti"
@@ -109,9 +103,15 @@ viewStudents model =
     Api.Data.Success students ->
         tbody []
         (List.map(\s -> tr [class "text-center"][
-            td[class "cursor-pointer"] [text s.cardNumber],  
-            td[class "cursor-pointer"] [text s.firstName],
-            td[class "cursor-pointer"] [text s.lastName],
+            td[class "cursor-pointer"] [
+            a[href (Route.toHref (Route.Student__Id_ { id = String.fromInt s.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text s.cardNumber]]]],   
+            td[class "cursor-pointer"] [
+            a[href (Route.toHref (Route.Student__Id_ { id = String.fromInt s.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text s.firstName]]]],   
+            td[class "cursor-pointer"] [
+            a[href (Route.toHref (Route.Student__Id_ { id = String.fromInt s.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text s.lastName]]]],   
             td[][button[class "btn btn-danger", onClick (ClickedDeleteStudent s)][
               text "Obrisi" ]]
             
@@ -120,7 +120,6 @@ viewStudents model =
       text "Loading..."
     _ ->
       text "Fail"
-
 
 subscriptions : Model -> Sub Msg
 subscriptions model =

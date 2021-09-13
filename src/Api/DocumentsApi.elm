@@ -1,4 +1,4 @@
-module Api.DocumentsApi exposing (Document, decoder, Documents ,get, delete, create)
+module Api.DocumentsApi exposing (Document, decoder, Documents ,get, delete, create, studentDocuments)
 import Json.Decode as Json
 import Utils.Json exposing (withField)
 import Api.Data exposing (Data)
@@ -87,4 +87,18 @@ create options =
         , body = Http.jsonBody body
         , expect =
             Api.Data.expectJson options.onResponse decoder
+        }
+studentDocuments:
+    {   
+        studentID : String,
+        onResponse : Data Documents -> msg
+    }
+    -> Cmd msg
+
+studentDocuments
+ options =
+        Http.get
+        { url = "http://localhost:8080/api/students/" ++ options.studentID ++ "/documents"
+        , expect =
+            Api.Data.expectJson options.onResponse documentsDecoder
         }

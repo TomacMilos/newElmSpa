@@ -7,16 +7,11 @@ import Request
 import Shared
 import View exposing (View)
 import UI
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, href)
 import Html exposing (..)
-import Http
-import Json.Decode exposing (Decoder)
-import Json.Decode as Json
 import Api.DocumentsApi exposing (..)
 import Api.Data exposing (Data)
 import Html.Events exposing (onClick)
-import Html.Attributes exposing (href)
-
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
@@ -27,13 +22,11 @@ page shared req =
         , subscriptions = subscriptions
         }
 
-
-
 -- INIT
 type alias Model =
-    { documents : Data Documents
+    { 
+      documents : Data Documents
     }
-
 
 init : (Model, Cmd Msg)
 init =
@@ -49,7 +42,6 @@ init =
     )
 
 -- UPDATE
-
 type Msg
   = GotDocuments (Data Documents) |  DeletedDocuments (Data Int) |  ClickedDeleteDocument Document
 
@@ -79,13 +71,11 @@ update msg model =
             )
 
 -- SUBSCRIPTIONS
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
 -- VIEW
-
 view : Model -> View Msg
 view model =
       { title = "Dokumenti"

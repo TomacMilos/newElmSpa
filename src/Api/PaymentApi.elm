@@ -1,4 +1,4 @@
-module Api.PaymentApi exposing (Payment, decoder, Payments ,get, delete, create)
+module Api.PaymentApi exposing (Payment, decoder, Payments ,get, delete, create, studentPayments)
 import Json.Decode as Json
 import Utils.Json exposing (withField)
 import Api.Data exposing (Data)
@@ -99,4 +99,18 @@ create options =
         , body = Http.jsonBody body
         , expect =
             Api.Data.expectJson options.onResponse decoder
+        }
+studentPayments:
+    {   
+        studentID : String,
+        onResponse : Data Payments -> msg
+    }
+    -> Cmd msg
+
+studentPayments
+ options =
+        Http.get
+        { url = "http://localhost:8080/api/students/" ++ options.studentID ++ "/payments"
+        , expect =
+            Api.Data.expectJson options.onResponse paymentsDecoder
         }

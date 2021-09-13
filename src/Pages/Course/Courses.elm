@@ -8,12 +8,10 @@ import Shared
 import View exposing (View)
 import UI
 import Html exposing (..)
-import Html.Attributes exposing (class)
-import Html.Attributes exposing (href)
+import Html.Attributes exposing (class, href, style)
 import Api.Data exposing (Data)
 import Api.CourseApi exposing (..)
 import Html.Events exposing (onClick)
-
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
@@ -26,9 +24,9 @@ page shared req =
 
 -- INIT
 type alias Model =
-    { courses : Data (List Course)
+    { 
+      courses : Data (List Course)
     }
-
 
 init : (Model, Cmd Msg)
 init =
@@ -46,8 +44,9 @@ init =
 -- UPDATE
 
 type Msg
-  = GotCourses (Data Courses) |  DeletedCourse (Data Int) |  ClickedDeleteCourse Course
-
+  = GotCourses (Data Courses) 
+  |  DeletedCourse (Data Int) 
+  |  ClickedDeleteCourse Course
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -74,15 +73,12 @@ update msg model =
             , Cmd.none
             )
 
-
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
-
 -- VIEW
-
 view : Model -> View Msg
 view model =
       { title = "Kursevi"
@@ -102,18 +98,19 @@ view model =
             ]
     ] ]
     }
+
 viewCourses : Model -> Html Msg
 viewCourses model =
   case model.courses of
     Api.Data.Success courses ->
         tbody []
         (List.map(\c -> tr [class "text-center"][
-            td[class "cursor-pointer"] [text c.name],  
+            a [href (Route.toHref (Route.Course__Id_ { id = String.fromInt c.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][
+            td[class "cursor-pointer text-center"] [text c.name]]],
             td[][button[class "btn btn-danger", onClick (ClickedDeleteCourse c)][text "Obrisi"]]
             ]) courses)
     Api.Data.Loading ->
         text "Loading..."
     _ ->
       text "Fail"
-
-

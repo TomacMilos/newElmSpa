@@ -1,4 +1,4 @@
-module Api.StudentApi exposing (Student, decoder, Students ,get, delete, create)
+module Api.StudentApi exposing (Student, decoder, Students ,get, delete, create, getById, update)
 import Json.Decode as Json
 import Utils.Json exposing (withField)
 import Api.Data exposing (Data)
@@ -38,6 +38,7 @@ get options =
         , expect =
             Api.Data.expectJson options.onResponse allStudentsDecoder
         }
+
 delete :
     {   studentId : Int,
         onResponse : Data Int -> msg
@@ -78,6 +79,48 @@ create options =
     in
     Token.post Nothing
         { url = "http://localhost:8080/api/user/registerStudent/"++options.student.password++"/"++options.student.firstName ++ "/"++options.student.lastName
+        , body = Http.jsonBody body
+        , expect =
+            Api.Data.expectJson options.onResponse decoder
+        }
+getById :
+    {   studentID : String,
+        onResponse : Data Student -> msg
+    }
+    -> Cmd msg
+getById options =
+        Http.get
+        { url = "http://localhost:8080/api/students/" ++ options.studentID
+        , expect =
+            Api.Data.expectJson options.onResponse decoder
+        }
+
+update :
+    { 
+     studentDTO :
+        { studentDTO
+            | firstName : String
+            , id : Int
+            , lastName: String
+            , cardNumber: String
+        }
+    , onResponse : Data Student -> msg
+    }
+    -> Cmd msg
+update options =
+    let
+        body : Json.Value
+        body =
+            Encode.object
+                [ 
+                        ( "id", Encode.int options.studentDTO.id )
+                        ,( "firstName", Encode.string options.studentDTO.firstName )
+                        ,( "lastName", Encode.string options.studentDTO.lastName )
+                        ,( "cardNumber", Encode.string options.studentDTO.cardNumber )
+                ]
+    in
+    Token.put Nothing
+        { url = "http://localhost:8080/api/students"
         , body = Http.jsonBody body
         , expect =
             Api.Data.expectJson options.onResponse decoder

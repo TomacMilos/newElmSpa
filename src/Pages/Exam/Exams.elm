@@ -8,21 +8,11 @@ import UI
 import View exposing (View)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Http
-import Json.Decode exposing (Decoder,string, field)
-import Json.Decode as Json
-import Utils.Json exposing (withField)
-import Utils.Json exposing (withDefault)
-import Json.Decode exposing (nullable)
-import Json.Decode exposing (oneOf)
-import Json.Decode exposing (null, map)
 import Api.Data exposing (Data)
 import Api.ExamApi exposing (..)
 import Utils.Time
 import Api.StudentApi exposing (Student)
 import Html.Events exposing (onClick)
-
-
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
@@ -33,12 +23,10 @@ page shared req =
         , subscriptions = subscriptions
         }
 
-
-
 -- INIT
-
 type alias Model =
-    { exams : Data Exams
+    { 
+      exams : Data Exams
     }
 
 init : (Model, Cmd Msg)
@@ -54,13 +42,11 @@ init =
         ]
     )
 
-
-
-
 -- UPDATE
-
 type Msg
-  = GotExams (Data Exams) |  DeletedExams (Data Int) |  ClickedDeleteExams Exam
+  = GotExams (Data Exams) 
+  | DeletedExams (Data Int) 
+  | ClickedDeleteExams Exam
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -87,14 +73,12 @@ update msg model =
             , Cmd.none
             )
 
-
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
 -- VIEW
-
 view : Model -> View Msg
 view model =
       { title = "Ispiti"
@@ -150,4 +134,3 @@ studentCardText student =
   case student of
     Nothing -> ""
     Just value -> value.cardNumber
-

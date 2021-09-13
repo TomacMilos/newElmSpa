@@ -1,4 +1,4 @@
-module Utils.Time exposing (formatDate,formatDecoder)
+module Utils.Time exposing (formatDate,formatDecoder, formatTime)
 
 import DateFormat as DF
 import Time
@@ -14,7 +14,14 @@ formatDate =
         , DF.yearNumber
         ]
         Time.utc
-
+formatTime : Time.Posix -> String
+formatTime =
+    DF.format
+        [ DF.hourMilitaryFromOneFixed
+        , DF.text ":"
+        , DF.minuteFixed
+        ]
+        Time.utc
 formatDatePost : Time.Posix -> String
 formatDatePost =
     DF.format

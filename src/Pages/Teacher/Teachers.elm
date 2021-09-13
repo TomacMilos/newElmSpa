@@ -7,12 +7,8 @@ import Shared
 import View exposing (View)
 import UI
 import Gen.Route as Route exposing (Route)
-import Http
 import Html exposing (..)
-import Html.Attributes exposing (class)
-import Json.Decode exposing (Decoder,string, field)
-import Json.Decode as Json
-import Html.Attributes exposing (href)
+import Html.Attributes exposing (class, href, style)
 import Api.Data exposing (Data)
 import Api.TeacherApi exposing (..)
 import Html.Events exposing (onClick)
@@ -27,14 +23,11 @@ page shared req =
         , subscriptions = subscriptions
         }
 
-
-
 -- INIT
-
 type alias Model =
-    { teachers : Data Teachers
+    { 
+      teachers : Data Teachers
     }
-
 
 init : (Model, Cmd Msg)
 init =
@@ -49,12 +42,11 @@ init =
         ]
     )
 
-
 -- UPDATE
-
-
 type Msg
-  = GotTeachers (Data Teachers) |  DeletedTeacher (Data Int) |  ClickedDeleteTeacher Teacher
+  =  GotTeachers (Data Teachers) 
+  |  DeletedTeacher (Data Int) 
+  |  ClickedDeleteTeacher Teacher
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -81,21 +73,12 @@ update msg model =
             , Cmd.none
             )
 
-
-
-
-
 -- SUBSCRIPTIONS
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
-
-
 -- VIEW
-
 view : Model -> View Msg
 view model =
       { title = "Profesori"
@@ -123,9 +106,15 @@ viewTeachers model =
     Api.Data.Success teachers ->
         tbody []
         (List.map(\t -> tr [class "text-center"][
-            td[class "cursor-pointer"] [text t.firstName],  
-            td[class "cursor-pointer"] [text t.lastName],
-            td[class "cursor-pointer"] [text t.teacherRank],
+            td[class "cursor-pointer"][
+            a[href (Route.toHref (Route.Teacher__Id_ { id = String.fromInt t.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text t.firstName]]]],     
+            td[class "cursor-pointer"][
+            a[href (Route.toHref (Route.Teacher__Id_ { id = String.fromInt t.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text t.lastName]]]],
+            td[class "cursor-pointer"][
+            a[href (Route.toHref (Route.Teacher__Id_ { id = String.fromInt t.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text t.teacherRank]]]],
             td[][button[class "btn btn-danger", onClick (ClickedDeleteTeacher t)][text "Obrisi"]]
             ]) teachers)
     Api.Data.Loading ->

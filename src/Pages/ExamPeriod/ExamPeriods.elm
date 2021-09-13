@@ -8,17 +8,11 @@ import Shared
 import UI
 import View exposing (View)
 import Html exposing (..)
-import Html.Attributes exposing (class)
-import Json.Decode exposing (Decoder)
-import Json.Decode as Json
-import Http
 import Api.Data exposing (Data)
 import Api.ExamPeriodApi exposing (..)
 import Utils.Time
 import Html.Events exposing (onClick)
-import Html.Attributes exposing (href)
-
-
+import Html.Attributes exposing (style, href, class)
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
@@ -29,10 +23,11 @@ page shared req =
         , subscriptions = subscriptions
         }
 
-
 type alias Model =
-    { examPeriods : Data ExamPeriods
+    {
+       examPeriods : Data ExamPeriods
     }
+
 init : (Model, Cmd Msg)
 init =
     ( {
@@ -46,7 +41,10 @@ init =
         ]
     )
 type Msg
-  = GotExamPeriods (Data ExamPeriods) |  DeletedExamPeriod (Data Int) |  ClickedDeleteExamPeriod ExamPeriod
+  = GotExamPeriods (Data ExamPeriods) 
+  |  DeletedExamPeriod (Data Int) 
+  |  ClickedDeleteExamPeriod ExamPeriod
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
@@ -78,7 +76,6 @@ subscriptions model =
     Sub.none
 
 -- VIEW
-
 view : Model -> View Msg
 view model =
       { title = "Ispitni Rokovi"
@@ -106,9 +103,15 @@ viewExamPeriods model =
     Api.Data.Success examPeriods ->
         tbody []
         (List.map(\ep -> tr [class "text-center"][
-            td[class "cursor-pointer"] [text ep.name],  
-            td[class "cursor-pointer"] [text (Utils.Time.formatDate ep.startDate)],  
-            td[class "cursor-pointer"] [text (Utils.Time.formatDate ep.endDate)],
+            td[class "cursor-pointer"] [
+            a[href (Route.toHref (Route.ExamPeriod__Id_ { id = String.fromInt ep.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text ep.name]]]],   
+            td[class "cursor-pointer"] [
+            a[href (Route.toHref (Route.ExamPeriod__Id_ { id = String.fromInt ep.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text (Utils.Time.formatDate ep.startDate)]]]],
+            td[class "cursor-pointer"] [
+            a[href (Route.toHref (Route.ExamPeriod__Id_ { id = String.fromInt ep.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text (Utils.Time.formatDate ep.endDate)]]]],
             td[][button[class "btn btn-danger", onClick (ClickedDeleteExamPeriod ep)][text "Obrisi"]]
             ]) examPeriods)
     Api.Data.Loading ->

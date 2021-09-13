@@ -8,25 +8,17 @@ import View exposing (View)
 import UI
 import Shared
 import Html exposing (..)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, type_, href, disabled, value)
 import Gen.Route as Route exposing (Route)
-import Html.Attributes exposing (type_)
-import Html.Attributes exposing (href)
 import Api.StudentApi exposing (Student)
 import Bootstrap.Button as Button
 import Bootstrap.Dropdown as Dropdown
-import Html.Events exposing (onClick)
-import Html.Attributes exposing (disabled)
-import Html.Attributes exposing (value, min)
-import Html.Events exposing (onInput)
-import Html.Attributes exposing (style)
+import Html.Events exposing (onInput, onClick)
 import Api.Data exposing (Data)
 import Api.TeacherApi exposing (Teacher)
 import Utils.Route
 import Api.Data exposing (Data)
 import Request exposing (Request)
-
-
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
@@ -37,11 +29,7 @@ page shared req =
         , subscriptions = subscriptions
         }
 
-
-
 -- INIT
-
-
 type alias Model =
     { 
       ime: String,
@@ -52,22 +40,35 @@ type alias Model =
       relozinka: String,
       myDrop1State : Dropdown.State,
       teacher: Maybe (Data Teacher)
-
     }
-
 
 init : ( Model, Cmd Msg )
 init =
-    ( { myDrop1State = Dropdown.initialState, ime = "",prezime= "", lozinka = "", relozinka = "", uloga ="Izaberi Ulogu", korisnickoIme = "", teacher = Nothing}, Cmd.none )
-
-
+    ( 
+        { 
+            myDrop1State = Dropdown.initialState, 
+            ime = "",
+            prezime= "", 
+            lozinka = "", 
+            relozinka = "", 
+            uloga ="Izaberi Ulogu", 
+            korisnickoIme = "", 
+            teacher = Nothing
+        }, 
+        Cmd.none 
+    )
 
 -- UPDATE
-
-
 type Msg
-    =  ChangedIme String | ChangedPrezime String | ChangedLozinka String | ChangedRelozinka String | ChangedUloga String | ChangedKorisnickoIme String | MyDrop1Msg Dropdown.State | SubmittedForm | GotTeacher (Data Teacher)
-
+    =  ChangedIme String 
+    | ChangedPrezime String 
+    | ChangedLozinka String 
+    | ChangedRelozinka String 
+    | ChangedUloga String 
+    | ChangedKorisnickoIme String 
+    | MyDrop1Msg Dropdown.State 
+    | SubmittedForm 
+    | GotTeacher (Data Teacher)
 
 update : Request -> Msg -> Model -> ( Model, Cmd Msg )
 update req msg model =
@@ -111,20 +112,13 @@ update req msg model =
                     Cmd.none
             )      
 
-
 -- SUBSCRIPTIONS
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Dropdown.subscriptions model.myDrop1State MyDrop1Msg ]
 
-
-
 -- VIEW
-
-
 view : Model -> View Msg
 view model =
       { title = "Dodavanje Profesora"
@@ -191,7 +185,6 @@ okButton model =
             button[class "btn btn-primary" ][text "Cancel"]],
             div[][text "Molimo unesite sve podatke!"]
         ]
-
     else
         div[][
             button[class "btn btn-success mr-2" , onClick SubmittedForm][text "Ok"],

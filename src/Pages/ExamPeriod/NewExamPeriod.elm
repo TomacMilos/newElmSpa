@@ -8,61 +8,55 @@ import View exposing (View)
 import UI
 import Shared
 import Html exposing (..)
-import Html.Attributes exposing (class)
 import Gen.Route as Route exposing (Route)
-import Html.Attributes exposing (type_)
-import Html.Attributes exposing (href)
-import Api.StudentApi exposing (Student)
-import Bootstrap.Button as Button
-import Bootstrap.Dropdown as Dropdown
-import Html.Events exposing (onClick)
 import Api.Data exposing (Data)
 import Api.StudentApi exposing (..)
 import Bootstrap.Dropdown exposing (DropdownOption)
-import Html.Attributes exposing (disabled)
-import Html.Attributes exposing (value, min)
-import Html.Events exposing (onInput)
-import Html.Attributes exposing (style)
-import Html.Attributes exposing (readonly)
-
+import Html.Attributes exposing (disabled, value, type_, href, class)
+import Html.Events exposing (onInput, onClick)
+import Api.ExamPeriodApi exposing (ExamPeriod)
+import Request exposing (Request)
+import Utils.Route
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
     Page.element
         { init = init
-        , update = update
+        , update = update req
         , view = view
         , subscriptions = subscriptions
         }
 
-
-
 -- INIT
-
-
 type alias Model =
     { 
       name: String,
       start: String,
-      end: String
-    }
+      end: String,
+      examPeriod: Maybe (Data ExamPeriod)
 
+    }
 
 init : ( Model, Cmd Msg )
 init =
-    ( {name = "" ,start = "", end =""}, Cmd.none )
-
-
+    ( {
+        name = "" ,
+        start = "", 
+        end ="", 
+        examPeriod = Nothing
+        },
+         Cmd.none )
 
 -- UPDATE
-
-
 type Msg
-    = ChangedName String | ChangedStart String | ChangedEnd String
+    = ChangedName String 
+    | ChangedStart String 
+    | ChangedEnd String
+    | SubmittedForm 
+    | GotExamPeriod (Data ExamPeriod)
 
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update :Request -> Msg -> Model -> ( Model, Cmd Msg )
+update req msg model =
     case msg of
         ChangedName name ->
             ({model | name = name}, Cmd.none)
@@ -70,21 +64,33 @@ update msg model =
             ({model | start = start}, Cmd.none)
         ChangedEnd end ->
             ({model | end = end}, Cmd.none)
-
-
+        SubmittedForm ->
+            ( model
+            , Api.ExamPeriodApi.create
+                { examPeriod =
+                    { name = model.name,
+                      startDate = model.start,
+                      endDate = model.end
+                    }
+                , onResponse = GotExamPeriod
+                }
+            )
+        GotExamPeriod examPeriod ->   
+            ( { model | examPeriod = Just examPeriod }
+            , case examPeriod of
+                Api.Data.Success newCourse ->
+                    Utils.Route.navigate req.key
+                    (Route.ExamPeriod__ExamPeriods)
+                _ ->
+                    Cmd.none
+            )
 
 -- SUBSCRIPTIONS
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
-
-
 -- VIEW
-
-
 view : Model -> View Msg
 view model =
     { title = "Novi Ispitni Rok"
@@ -122,10 +128,9 @@ okButton model =
             button[class "btn btn-primary" ][text "Cancel"]],
             div[][text "Molimo unesite sve podatke!"]
         ]
-
     else
         div[][
-            button[class "btn btn-success mr-2"][text "Ok"],
+            button[class "btn btn-success mr-2", onClick SubmittedForm][text "Ok"],
             a [ href (Route.toHref Route.Payment__Payments)] [
             button[class "btn btn-primary" ][text "Cancel"]]
         ]

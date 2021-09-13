@@ -8,22 +8,13 @@ import View exposing (View)
 import UI
 import Shared
 import Html exposing (..)
-import Html.Attributes exposing (class)
 import Gen.Route as Route exposing (Route)
-import Html.Attributes exposing (type_)
-import Html.Attributes exposing (href)
 import Api.StudentApi exposing (Student)
-import Bootstrap.Button as Button
-import Bootstrap.Dropdown as Dropdown
-import Html.Events exposing (onClick)
-import Html.Attributes exposing (disabled)
-import Html.Attributes exposing (value, min)
-import Html.Events exposing (onInput)
-import Html.Attributes exposing (style)
+import Html.Events exposing (onClick, onInput)
+import Html.Attributes exposing (disabled, value, href, type_, class)
 import Request exposing (Request)
 import Utils.Route
 import Api.Data exposing (Data)
-
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
@@ -34,12 +25,7 @@ page shared req =
         , subscriptions = subscriptions
         }
 
-
-
 -- INIT
-
-
-
 type alias Model =
     { 
       ime: String,
@@ -47,24 +33,29 @@ type alias Model =
       lozinka: String,
       relozinka: String,
       student: Maybe (Data Student)
-
     }
-
-
 init : ( Model, Cmd Msg )
 init =
-    ( {ime = "",prezime= "", lozinka = "", relozinka = "", student = Nothing}, Cmd.none )
-
-
+    ( 
+        {
+            ime = "",
+            prezime= "", 
+            lozinka = "", 
+            relozinka = "", 
+            student = Nothing
+        }
+        , Cmd.none )
 
 -- UPDATE
-
-
 type Msg
-    =  ChangedIme String | ChangedPrezime String | ChangedLozinka String | ChangedRelozinka String | SubmittedForm | GotStudent (Data Student)
+    =  ChangedIme String 
+    | ChangedPrezime String 
+    | ChangedLozinka String 
+    | ChangedRelozinka String 
+    | SubmittedForm 
+    | GotStudent (Data Student)
 
-
-update : Request-> Msg -> Model -> ( Model, Cmd Msg )
+update : Request -> Msg -> Model -> ( Model, Cmd Msg )
 update req msg model =
     case msg of
         ChangedIme ime ->
@@ -96,20 +87,12 @@ update req msg model =
                     Cmd.none
             )        
 
-
-
 -- SUBSCRIPTIONS
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
-
-
 -- VIEW
-
-
 view : Model -> View Msg
 view model =
       { title = "Dodavanje Studenta"
@@ -147,17 +130,17 @@ okButton model =
     if  model.ime == "" || model.prezime == "" || model.lozinka == "" || model.relozinka == "" || String.length model.lozinka < 8 || model.lozinka /= model.relozinka  then
         div[][
             button[class "btn btn-success mr-2" , disabled True][text "Ok"],
-            a [ href (Route.toHref Route.Payment__Payments)] [
+            a [ href (Route.toHref Route.Student__Students)] [
             button[class "btn btn-primary" ][text "Cancel"]],
             div[][text "Molimo unesite sve podatke!"]
         ]
-
     else
         div[][
             button[class "btn btn-success mr-2", onClick SubmittedForm][text "Ok"],
-            a [ href (Route.toHref Route.Payment__Payments)] [
+            a [ href (Route.toHref Route.Student__Students)] [
             button[class "btn btn-primary" ][text "Cancel"]]
         ]
+
 passmess : Model -> Html Msg
 passmess model =
     if  String.length model.lozinka < 8  then

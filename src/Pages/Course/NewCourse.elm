@@ -8,26 +8,17 @@ import View exposing (View)
 import UI
 import Shared
 import Html exposing (..)
-import Html.Attributes exposing (class)
 import Gen.Route as Route exposing (Route)
-import Html.Attributes exposing (type_)
-import Html.Attributes exposing (href)
-import Api.StudentApi exposing (Student)
-import Bootstrap.Button as Button
 import Bootstrap.Dropdown as Dropdown
-import Html.Events exposing (onClick)
 import Api.Data exposing (Data)
 import Api.StudentApi exposing (..)
 import Bootstrap.Dropdown exposing (DropdownOption)
-import Html.Attributes exposing (disabled)
-import Html.Attributes exposing (value, min)
-import Html.Events exposing (onInput)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (disabled, value, href, type_, class)
+import Html.Events exposing (onInput, onClick)
 import Api.CourseApi
 import Utils.Route
 import Request exposing (Request)
 import Api.CourseApi exposing (Course)
-
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
@@ -38,11 +29,7 @@ page shared req =
         , subscriptions = subscriptions
         }
 
-
-
 -- INIT
-
-
 type alias Model =
     { 
       myDrop1State : Dropdown.State,
@@ -51,18 +38,17 @@ type alias Model =
 
     }
 
-
 init : ( Model, Cmd Msg )
 init =
     ( {myDrop1State = Dropdown.initialState, name= "", course = Nothing}, Cmd.none )
 
-
-
 -- UPDATE
 
-
 type Msg
-    = MyDrop1Msg Dropdown.State | ChangedName String | SubmittedForm | GotCourse (Data Course)
+    = MyDrop1Msg Dropdown.State 
+    | ChangedName String 
+    | SubmittedForm 
+    | GotCourse (Data Course)
 
 update : Request -> Msg -> Model -> ( Model, Cmd Msg )
 update req msg model =
@@ -92,20 +78,13 @@ update req msg model =
                     Cmd.none
             )
 
-
 -- SUBSCRIPTIONS
-
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Dropdown.subscriptions model.myDrop1State MyDrop1Msg ]
 
-
 -- VIEW
-
-
 view : Model -> View Msg
 view model =
       { title = "Novi Kurs"
@@ -123,6 +102,7 @@ view model =
             ]
     ] ]
     }
+
 okButton : Model -> Html Msg
 okButton model =
     if  model.name == ""  then
@@ -132,7 +112,6 @@ okButton model =
             button[class "btn btn-primary" ][text "Cancel"]],
             div[][text "Molimo unesite sve podatke!"]
         ]
-
     else
         div[][
             button[class "btn btn-success mr-2", onClick SubmittedForm][text "Ok"],

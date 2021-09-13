@@ -1,4 +1,4 @@
-module Api.ExamApi exposing (Exam, decoder, Exams ,get, delete)
+module Api.ExamApi exposing (Exam, decoder, Exams ,delete, getExamPeriodExams,get, examPassStudent, examStudent, nextexemsStudent)
 import Json.Decode as Json
 import Utils.Json exposing (withField)
 import Api.Data exposing (Data)
@@ -45,7 +45,18 @@ decoder =
         |> withField "examPeriod" Api.ExamPeriodApi.decoder
         |> withField "student" (nullable Api.StudentApi.decoder)
 
-
+getExamPeriodExams :
+    {   
+        examPeriodId : String,
+        onResponse : Data Exams -> msg
+    }
+    -> Cmd msg
+getExamPeriodExams options =
+        Http.get
+        { url = "http://localhost:8080/api/examPeriods/" ++ options.examPeriodId ++ "/exams"
+        , expect =
+            Api.Data.expectJson options.onResponse examsDecoder
+        }
 get :
     { onResponse : Data Exams -> msg
     }
@@ -56,6 +67,7 @@ get options =
         , expect =
             Api.Data.expectJson options.onResponse examsDecoder
         }
+        
 delete :
     {   examId : Int,
         onResponse : Data Int -> msg
@@ -66,4 +78,47 @@ delete options =
         { url = "http://localhost:8080/api/exams/" ++ String.fromInt options.examId
         , expect =
             Api.Data.expectJson options.onResponse (Json.succeed options.examId)
+        }
+
+
+examPassStudent:
+    {   
+        studentID : String,
+        onResponse : Data Exams -> msg
+    }
+    -> Cmd msg
+examPassStudent
+ options =
+        Http.get
+        { url = "http://localhost:8080/api/students/" ++ options.studentID ++ "/examspass"
+        , expect =
+            Api.Data.expectJson options.onResponse examsDecoder
+        }
+examStudent:
+    {   
+        studentID : String,
+        onResponse : Data Exams -> msg
+    }
+    -> Cmd msg
+examStudent
+ options =
+        Http.get
+        { url = "http://localhost:8080/api/students/" ++ options.studentID ++ "/exams"
+        , expect =
+            Api.Data.expectJson options.onResponse examsDecoder
+        }
+
+nextexemsStudent:
+    {   
+        studentID : String,
+        onResponse : Data Exams -> msg
+    }
+    -> Cmd msg
+
+nextexemsStudent
+ options =
+        Http.get
+        { url = "http://localhost:8080/api/students/" ++ options.studentID ++ "/nextexems"
+        , expect =
+            Api.Data.expectJson options.onResponse examsDecoder
         }

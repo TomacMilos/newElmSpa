@@ -8,17 +8,12 @@ import Shared
 import UI
 import View exposing (View)
 import Html exposing (..)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, href)
 import Url exposing (Protocol(..))
-import Http
-import Json.Decode exposing (Decoder)
-import Json.Decode as Json
 import Api.Data exposing (Data)
 import Api.PaymentApi exposing (..)
 import Utils.Time
-import Html.Attributes exposing (href)
 import Html.Events exposing (onClick)
-
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
 page shared req =
@@ -29,18 +24,18 @@ page shared req =
         , subscriptions = subscriptions
         }
 
-
-
 -- INIT
 type alias Model =
-    { payments : Data Payments,
+    { 
+      payments : Data Payments,
       sum : Int
     }
 
 init : (Model, Cmd Msg)
 init =
     ( {
-        payments = Api.Data.Loading, sum = 0
+        payments = Api.Data.Loading, 
+        sum = 0
       }
     , Cmd.batch
         [ get
@@ -50,11 +45,11 @@ init =
         ]
     )
 
-
 -- UPDATE
 type Msg
-  = GotPayments (Data Payments) |  DeletedPayment (Data Int) |  ClickedDeletePayment Payment
-  
+  = GotPayments (Data Payments) 
+  |  DeletedPayment (Data Int) 
+  |  ClickedDeletePayment Payment
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -80,13 +75,13 @@ update msg model =
             ( { model | payments = Api.Data.map removePayment model.payments }
             , Cmd.none
             )
+
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
 -- VIEW
-
 view : Model -> View Msg
 view model =
       { title = "Uplate"
@@ -110,6 +105,7 @@ view model =
             ]
     ] ]
     }
+
 viewPayments : Model -> Html Msg
 viewPayments model =
  case model.payments of
@@ -140,4 +136,3 @@ setSum model =
       text "Loading..."
     _ ->
       text "Fail"
-
