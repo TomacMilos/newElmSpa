@@ -94,7 +94,9 @@ view model =
       { title = "Dodavanje Admina"
     , body = UI.layout [ div [class "container"] [
             br[][],
-            h2[class "ml"][text "Dodaj novog admina"]
+            h2[class "ml"][
+                Html.i [ Html.Attributes.class "fas fa-user-plus" ][],
+                text " Dodaj novog admina"]
             ,div[class "mt-5"][
                 div[class "form-group"][
                     label[][text "Korisnicko Ime"],
@@ -121,16 +123,16 @@ okButton : Model -> Html Msg
 okButton model =
     if  model.ime == "" || model.relozinka == "" || model.relozinka == "" || String.length model.lozinka < 8 || model.lozinka /= model.relozinka   then
         div[][
-            button[class "btn btn-success mr-2" , disabled True][text "Ok"],
+            button[class "btn btn-success mr-2" , disabled True][Html.i [ Html.Attributes.class "fas fa-save" ][]],
             a [ href (Route.toHref Route.Student__Students)] [
-            button[class "btn btn-primary" ][text "Cancel"]],
+            button[class "btn btn-primary" ][Html.i [ Html.Attributes.class "fas fa-times" ][]]],
             div[][text "Molimo unesite sve podatke!"]
         ]
     else
         div[][
-            button[class "btn btn-success mr-2", onClick SubmittedForm][text "Ok"],
+            button[class "btn btn-success mr-2", onClick SubmittedForm][Html.i [ Html.Attributes.class "fas fa-save" ][]],
             a [ href (Route.toHref Route.Student__Students) ] [
-            button[class "btn btn-primary" ][text "Cancel"]]
+            button[class "btn btn-primary" ][Html.i [ Html.Attributes.class "fas fa-times" ][]]]
         ]
 
 passmess : Model -> Html Msg

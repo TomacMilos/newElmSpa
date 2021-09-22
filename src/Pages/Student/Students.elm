@@ -79,7 +79,9 @@ view model =
       { title = "Studenti"
     , body = UI.layout [ div [class "container"] [
             br[] [],
-            h2[class "ml"][text "Studenti"]
+            h2[class "ml"][
+            Html.i [ Html.Attributes.class "fas fa-user-graduate" ] [],
+              text " Studenti"]
             ,div[class "mt-5"][
                 table[class "table table-hover table-striped"][
                     thead[class "thead-dark"][
@@ -89,7 +91,7 @@ view model =
                         th[class "text-center"]
                         [
                           a [ href (Route.toHref Route.Student__NewStudent)] [
-                          button[class "btn btn-success"][text "Dodaj"]]
+                          button[class "btn btn-success"][Html.i [ Html.Attributes.class "fas fa-plus" ][]]]
                           ]
                     ],viewStudents model
                 ]
@@ -113,11 +115,16 @@ viewStudents model =
             a[href (Route.toHref (Route.Student__Id_ { id = String.fromInt s.id })), style "text-decoration" "none" , style "color" "black"] [
             div[style "display" "flex", style "justify-content" "center"][p[][text s.lastName]]]],   
             td[][button[class "btn btn-danger", onClick (ClickedDeleteStudent s)][
-              text "Obrisi" ]]
+              Html.i [ Html.Attributes.class "fas fa-trash" ][] ]]
             
             ]) students)
     Api.Data.Loading ->
-      text "Loading..."
+      tr[][
+      td[][],
+      div[class "text-center mt-5 ml-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+      ]
+      ]
     _ ->
       text "Fail"
 

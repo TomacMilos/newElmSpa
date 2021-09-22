@@ -25,6 +25,7 @@ import Api.DocumentsApi
 import Api.DocumentsApi exposing (Documents)
 import Api.PaymentApi
 import Api.PaymentApi exposing (Payments)
+import Html.Attributes exposing (style)
 
 
 page : Shared.Model -> Request.With Params -> Page.With Model Msg
@@ -319,14 +320,30 @@ viewPassExam model =
     Api.Data.Success exams ->
         tbody []
         (List.map(\e -> tr [class "text-center"][
-            td[class "cursor-pointer"] [text e.course.name],
-            td[class "cursor-pointer"] [text (Utils.Time.formatDate e.date)],
-            td[class "cursor-pointer"] [text (Utils.Time.formatTime e.date)],
-            td[class "cursor-pointer"] [text (ocena e.examPoints e.labPoints)]
-
+            td[class "cursor-pointer"] [
+            a[href (Route.toHref (Route.Exam__Id_ { id = String.fromInt e.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text e.course.name]]]
+            ],
+            td[class "cursor-pointer"] [
+            a[href (Route.toHref (Route.Exam__Id_ { id = String.fromInt e.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text (Utils.Time.formatDate e.date)]]]
+            ],
+            td[class "cursor-pointer"] [
+            a[href (Route.toHref (Route.Exam__Id_ { id = String.fromInt e.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text (Utils.Time.formatTime e.date)]]]
+            ],
+            td[class "cursor-pointer"] [
+            a[href (Route.toHref (Route.Exam__Id_ { id = String.fromInt e.id })), style "text-decoration" "none" , style "color" "black"] [
+            div[style "display" "flex", style "justify-content" "center"][p[][text (ocena e.examPoints e.labPoints)]]]
+            ]
             ]) exams)
     Api.Data.Loading ->
-      text "Loading..."
+        tr[][
+            td[][],
+            div[class "text-center mt-5 ml-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+        ]
+        ]
     _ ->
       text "Fail"
 
@@ -341,7 +358,12 @@ viewUplata model =
             td[] [text ((Utils.Time.formatDate p.date) ++ " " ++ (Utils.Time.formatTime p.date))]
             ]) payments)
     Api.Data.Loading ->
-      text "Loading..."
+        tr[][
+            td[][],
+            div[class "text-center mt-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+        ]
+        ]
     _ ->
       text "Fail"
 viewDokumenti : Model -> Html Msg
@@ -354,7 +376,11 @@ viewDokumenti model =
             ]) documents)
 
     Api.Data.Loading ->
-      text "Loading..."
+        tr[][
+            div[class "text-center mt-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+        ]
+        ]
     _ ->
       text "Fail"
 viewExam : Model -> Html Msg
@@ -367,11 +393,16 @@ viewExam model =
             td[] [text (Utils.Time.formatDate e.date)],
             td[] [text (Utils.Time.formatTime e.date)],
             td[] [
-            button[class "btn btn-success mr-2"][text "i"]
+            button[class "btn btn-success mr-2"][Html.i [ Html.Attributes.class "fas fa-info" ][]]
             ]
             ]) ex)
     Api.Data.Loading ->
-      text "Loading..."
+        tr[][
+            td[][],
+            div[class "text-center mt-5 ml-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+        ]
+        ]
     _ ->
       text "Fail"
 
@@ -385,14 +416,20 @@ viewNextExam model =
             td[] [text (Utils.Time.formatDate e.date)],
             td[] [text (Utils.Time.formatTime e.date)],
             td[] [
-            button[class "btn btn-warning mr-2"][text "x"]
+            button[class "btn btn-warning mr-2"][Html.i [ Html.Attributes.class "fas fa-times" ][]]
             ],
             td[] [
-            button[class "btn btn-success mr-2"][text "i"]
+            button[class "btn btn-success mr-2"][Html.i [ Html.Attributes.class "fas fa-info" ][]]
             ]
             ]) ex)
     Api.Data.Loading ->
-      text "Loading..."
+            tr[][
+            td[][],
+            td[][],
+            div[class "text-center mt-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+        ]
+        ]
     _ ->
       text "Fail"
 ocena: Int -> Int -> String
@@ -421,7 +458,12 @@ viewEnrollments model =
             td[] [text (Utils.Time.formatDate s.endDate)]
             ]) enrollments)
     Api.Data.Loading ->
-      text "Loading..."
+        tr[][
+            td[][],
+            div[class "text-center mt-5 ml-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+        ]
+        ]
     _ ->
       text "Fail"
 
@@ -430,11 +472,11 @@ okButton model =
     if  model.firstName == "" || model.lastName == "" || model.cardNumber == "" then
         div[][
             div[][text "Molimo unesite sve podatke!"],
-            button[class "btn btn-success mr-2" , disabled True][text "Save"]
+            button[class "btn btn-success mr-2" , disabled True][Html.i [ Html.Attributes.class "fas fa-save" ][]]
         ]
     else
         div[][
-            button[class "btn btn-success mr-2" , onClick SubmittedForm][text "Save"]
+            button[class "btn btn-success mr-2" , onClick SubmittedForm][Html.i [ Html.Attributes.class "fas fa-save" ][]]
         ]
 valueInt: Maybe Int -> Int
 valueInt broj =
@@ -451,6 +493,6 @@ setSum model =
           td[class "text-center"][text (String.fromInt (List.sum (List.map (\p -> p.vrednostUplate) payments)))]
         ]
     Api.Data.Loading ->
-      text "Loading..."
+      text ""
     _ ->
       text "Fail"

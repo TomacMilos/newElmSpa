@@ -1,4 +1,4 @@
-module Api.ExamApi exposing (Exam, decoder, Exams ,delete, getExamPeriodExams,get, examPassStudent, examStudent, nextexemsStudent)
+module Api.ExamApi exposing (Exam, decoder, Exams ,delete, getExamPeriodExams,get, examPassStudent, examStudent, examsForTeacher, update , nextexemsStudent, getById, registerExam, getExamsForExamPeriod)
 import Json.Decode as Json
 import Utils.Json exposing (withField)
 import Api.Data exposing (Data)
@@ -11,9 +11,7 @@ import Json.Decode exposing (Decoder)
 import Json.Decode exposing (nullable)
 import Time
 import Iso8601
-
-
-
+import Json.Encode as Encode
 
 
 type alias Exams = 
@@ -67,7 +65,32 @@ get options =
         , expect =
             Api.Data.expectJson options.onResponse examsDecoder
         }
-        
+
+getExamsForExamPeriod :
+    { 
+        examPeriodId: String,
+        studentId: String,
+        onResponse : Data Exams -> msg
+    }
+    -> Cmd msg
+getExamsForExamPeriod options =
+        Http.get
+        { url = "http://localhost:8080/api/examPeriods/"++ options.examPeriodId ++"/exam/" ++ options.studentId
+        , expect =
+            Api.Data.expectJson options.onResponse examsDecoder
+        }
+getById :
+    { 
+        examID : String,
+        onResponse : Data Exam -> msg
+    }
+    -> Cmd msg
+getById options =
+        Http.get
+        { url = "http://localhost:8080/api/exams/" ++ options.examID
+        , expect =
+            Api.Data.expectJson options.onResponse decoder
+        }        
 delete :
     {   examId : Int,
         onResponse : Data Int -> msg
@@ -122,3 +145,112 @@ nextexemsStudent
         , expect =
             Api.Data.expectJson options.onResponse examsDecoder
         }
+examsForTeacher:
+    {   
+        courseID : String,
+        onResponse : Data Exams -> msg
+    }
+    -> Cmd msg
+
+examsForTeacher
+ options =
+        Http.get
+        { url = "http://localhost:8080/api/courses/" ++ options.courseID ++ "/examspasscourse"
+        , expect =
+            Api.Data.expectJson options.onResponse examsDecoder
+        }
+
+registerExam :
+    { 
+     examDTO :
+        { examDTO
+            | course : Course
+            , date : Time.Posix
+            , examPeriod: ExamPeriod
+            , examPoints: Int
+            , id: Int
+            , labPoints: Int
+            , student: Student
+        }
+    , onResponse : Data Exam -> msg
+    }
+    -> Cmd msg
+    
+registerExam options =
+    let
+        body : Json.Value
+        body =
+            Encode.object
+                [ 
+                        ( "id", Encode.int options.examDTO.id )
+                        ,( "date", Iso8601.encode options.examDTO.date)
+                        ,( "examPeriod", Encode.object 
+                                                    [ ( "name", Encode.string options.examDTO.examPeriod.name),
+                                                      ( "startDate", Iso8601.encode options.examDTO.examPeriod.startDate),
+                                                      ( "endDate", Iso8601.encode options.examDTO.examPeriod.startDate)
+                                                    ])
+                        
+                        ,( "labPoints", Encode.int options.examDTO.labPoints )
+                        ,( "examPoints", Encode.int options.examDTO.examPoints)
+                        ,( "student", Encode.object 
+                                                    [ 
+                                                    ( "id", Encode.int options.examDTO.student.id )
+                                                    ,( "firstName", Encode.string options.examDTO.student.firstName )
+                                                    ,( "lastName", Encode.string options.examDTO.student.lastName )
+                                                    ,( "cardNumber", Encode.string options.examDTO.student.cardNumber )
+                                                    ])
+                ]
+    in
+    Token.post Nothing
+        { url = "http://localhost:8080/api/exams/" ++ String.fromInt options.examDTO.student.id ++ "/examRegistration/" ++ String.fromInt options.examDTO.id 
+        , body = Http.jsonBody body
+        , expect =
+            Api.Data.expectJson options.onResponse decoder
+        } 
+update :
+    { 
+     examDTO :
+        { examDTO
+            | course : Course
+            , date : Time.Posix
+            , examPeriod: ExamPeriod
+            , examPoints: Int
+            , id: Int
+            , labPoints: Int
+            , student: Student
+        }
+    , onResponse : Data Exam -> msg
+    }
+    -> Cmd msg
+    
+update options =
+    let
+        body : Json.Value
+        body =
+            Encode.object
+                [ 
+                        ( "id", Encode.int options.examDTO.id )
+                        ,( "date", Iso8601.encode options.examDTO.date)
+                        ,( "examPeriod", Encode.object 
+                                                    [ ( "name", Encode.string options.examDTO.examPeriod.name),
+                                                      ( "startDate", Iso8601.encode options.examDTO.examPeriod.startDate),
+                                                      ( "endDate", Iso8601.encode options.examDTO.examPeriod.startDate)
+                                                    ])
+                        
+                        ,( "labPoints", Encode.int options.examDTO.labPoints )
+                        ,( "examPoints", Encode.int options.examDTO.examPoints)
+                        ,( "student", Encode.object 
+                                                    [ 
+                                                    ( "id", Encode.int options.examDTO.student.id )
+                                                    ,( "firstName", Encode.string options.examDTO.student.firstName )
+                                                    ,( "lastName", Encode.string options.examDTO.student.lastName )
+                                                    ,( "cardNumber", Encode.string options.examDTO.student.cardNumber )
+                                                    ])
+                ]
+    in
+    Token.put Nothing
+        { url = "http://localhost:8080/api/exams" 
+        , body = Http.jsonBody body
+        , expect =
+            Api.Data.expectJson options.onResponse decoder
+        } 

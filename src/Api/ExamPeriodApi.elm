@@ -1,4 +1,4 @@
-module Api.ExamPeriodApi exposing (ExamPeriod, decoder, ExamPeriods ,get, delete, create, getById)
+module Api.ExamPeriodApi exposing (ExamPeriod, decoder, ExamPeriods ,get, delete, create, getById, getNext)
 import Json.Decode as Json
 import Utils.Json exposing (withField)
 import Api.Data exposing (Data)
@@ -37,6 +37,16 @@ get :
 get options =
         Http.get
         { url = "http://localhost:8080/api/examPeriods/all"
+        , expect =
+            Api.Data.expectJson options.onResponse examPeriodDecoder
+        }
+getNext :
+    { onResponse : Data ExamPeriods -> msg
+    }
+    -> Cmd msg
+getNext options =
+        Http.get
+        { url = "http://localhost:8080/api/examPeriods/nextExamPeriods"
         , expect =
             Api.Data.expectJson options.onResponse examPeriodDecoder
         }

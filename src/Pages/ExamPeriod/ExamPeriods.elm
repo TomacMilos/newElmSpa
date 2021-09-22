@@ -81,7 +81,9 @@ view model =
       { title = "Ispitni Rokovi"
     , body = UI.layout [ div [class "container"] [
             br[][],
-            h2[class "ml"][text "Ispitni Rokovi"]
+            h2[class "ml"][
+              Html.i [ Html.Attributes.class "fas fa-calendar-alt" ][],
+              text "  Ispitni Rokovi"]
             ,div[class "mt-5"][
                 table[class "table table-hover table-striped"][
                     thead[class "thead-dark"][
@@ -90,7 +92,7 @@ view model =
                         th[class "text-center"][text "Datum Zavrsetka"],
                         th[class "text-center"][
                         a [ href (Route.toHref Route.ExamPeriod__NewExamPeriod)] [
-                          button[class "btn btn-success"][text "Dodaj"]]]
+                          button[class "btn btn-success"][Html.i [ Html.Attributes.class "fas fa-plus" ][]]]]
                     ], viewExamPeriods model
                 ]
             ]
@@ -112,9 +114,14 @@ viewExamPeriods model =
             td[class "cursor-pointer"] [
             a[href (Route.toHref (Route.ExamPeriod__Id_ { id = String.fromInt ep.id })), style "text-decoration" "none" , style "color" "black"] [
             div[style "display" "flex", style "justify-content" "center"][p[][text (Utils.Time.formatDate ep.endDate)]]]],
-            td[][button[class "btn btn-danger", onClick (ClickedDeleteExamPeriod ep)][text "Obrisi"]]
+            td[][button[class "btn btn-danger", onClick (ClickedDeleteExamPeriod ep)][Html.i [ Html.Attributes.class "fas fa-trash" ][]]]
             ]) examPeriods)
     Api.Data.Loading ->
-      text "Loading..."
+      tr[][
+      td[][],
+      div[class "text-center mt-5 ml-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+      ]
+      ]
     _ ->
       text "Fail"

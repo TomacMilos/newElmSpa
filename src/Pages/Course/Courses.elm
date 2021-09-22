@@ -84,14 +84,16 @@ view model =
       { title = "Kursevi"
     , body = UI.layout [ div [class "container"] [
             br[][],
-            h2[class "ml"][text "Kursevi"]
+            h2[class "ml"][
+              Html.i [ Html.Attributes.class "fas fa-chalkboard-teacher" ][],
+              text " Kursevi"]
             ,div[class "mt-5"][
                 table[class "table table-hover table-striped"][
                     thead[class "thead-dark"][
                         th[class "text-center"][text "Naziv"],
                         th[class "text-center"][
                           a [ href (Route.toHref Route.Course__NewCourse)] [
-                            button[class "btn btn-success"][text "Dodaj"]]
+                            button[class "btn btn-success"][Html.i [ Html.Attributes.class "fas fa-plus" ][]]]
                         ]
                     ], viewCourses model
                 ]
@@ -108,9 +110,13 @@ viewCourses model =
             a [href (Route.toHref (Route.Course__Id_ { id = String.fromInt c.id })), style "text-decoration" "none" , style "color" "black"] [
             div[style "display" "flex", style "justify-content" "center"][
             td[class "cursor-pointer text-center"] [text c.name]]],
-            td[][button[class "btn btn-danger", onClick (ClickedDeleteCourse c)][text "Obrisi"]]
+            td[][button[class "btn btn-danger", onClick (ClickedDeleteCourse c)][Html.i [ Html.Attributes.class "fas fa-trash" ][]]]
             ]) courses)
     Api.Data.Loading ->
-        text "Loading..."
+      tr[][
+      div[class "text-center mt-5 ml-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+      ]
+      ]
     _ ->
       text "Fail"

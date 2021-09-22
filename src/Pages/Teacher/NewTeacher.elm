@@ -124,7 +124,9 @@ view model =
       { title = "Dodavanje Profesora"
     , body = UI.layout [ div [class "container"] [
             br[][],
-            h2[class "ml"][text "Dodavanje Profesora"]
+            h2[class "ml"][
+              Html.i [ Html.Attributes.class "fas fa-user-plus" ][],
+                text "Dodavanje Profesora"]
             ,div[class "mt-5"][
                 div[class "form-group"][
                     label[][text "Ime Profesora"],
@@ -180,16 +182,16 @@ okButton : Model -> Html Msg
 okButton model =
     if  model.ime == "" || model.prezime == "" || model.lozinka == "" || model.relozinka == "" || model.uloga == "Izaberi Ulogu" || model.korisnickoIme == "" || String.length model.lozinka < 8 || model.lozinka /= model.relozinka then
         div[][
-            button[class "btn btn-success mr-2" , disabled True][text "Ok"],
-            a [ href (Route.toHref Route.Payment__Payments)] [
-            button[class "btn btn-primary" ][text "Cancel"]],
+            button[class "btn btn-success mr-2" , disabled True][Html.i [ Html.Attributes.class "fas fa-save" ][]],
+            a [ href (Route.toHref Route.Teacher__Teachers)] [
+            button[class "btn btn-primary" ][Html.i [ Html.Attributes.class "fas fa-times" ][]]],
             div[][text "Molimo unesite sve podatke!"]
         ]
     else
         div[][
-            button[class "btn btn-success mr-2" , onClick SubmittedForm][text "Ok"],
-            a [ href (Route.toHref Route.Payment__Payments)] [
-            button[class "btn btn-primary" ][text "Cancel"]]
+            button[class "btn btn-success mr-2" , onClick SubmittedForm][Html.i [ Html.Attributes.class "fas fa-save" ][]],
+            a [ href (Route.toHref Route.Teacher__Teachers)] [
+            button[class "btn btn-primary" ][Html.i [ Html.Attributes.class "fas fa-times" ][]]]
         ]
 
 passmess : Model -> Html Msg

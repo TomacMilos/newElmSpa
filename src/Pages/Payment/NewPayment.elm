@@ -123,7 +123,9 @@ view model =
       { title = "Nova Uplata"
     , body = UI.layout [ div [class "container"] [
             br[][],
-            h2[class "ml"][text "Nova Uplata"]
+            h2[class "ml"][
+                Html.i [ Html.Attributes.class "fas fa-money-bill-wave" ][],
+                text "Nova Uplata"]
             ,div[class "mt-5"][
                 div[class "form-group"][
                     label[][text "Svrha Uplate"],
@@ -172,14 +174,14 @@ okButton : Model -> Html Msg
 okButton model =
     if model.student.id == 0 || model.name == "" || model.value == Just 0  then
         div[][
-            button[class "btn btn-success mr-2", disabled True][text "Ok"],
+            button[class "btn btn-success mr-2", disabled True][Html.i [ Html.Attributes.class "fas fa-save" ][]],
             a [ href (Route.toHref Route.Payment__Payments)] [
-            button[class "btn btn-primary" ][text "Cancel"]],
+            button[class "btn btn-primary" ][Html.i [ Html.Attributes.class "fas fa-times" ][]]],
             div[][text "Molimo unesite sve podatke!"]
         ]
     else
         div[][
-            button[class "btn btn-success mr-2", onClick SubmittedForm][text "Ok"],
+            button[class "btn btn-success mr-2", onClick SubmittedForm][Html.i [ Html.Attributes.class "fas fa-save" ][]],
             a [ href (Route.toHref Route.Payment__Payments)] [
-            button[class "btn btn-primary" ][text "Cancel"]]
+            button[class "btn btn-primary" ][Html.i [ Html.Attributes.class "fas fa-times" ][]]]
         ]

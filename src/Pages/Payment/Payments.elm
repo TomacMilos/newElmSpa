@@ -87,7 +87,9 @@ view model =
       { title = "Uplate"
     , body = UI.layout [ div [class "container"] [
             br[][],
-            h2[class "ml"][text "Uplate"]
+            h2[class "ml"][
+              Html.i [ Html.Attributes.class "fas fa-money-bill-wave" ][],
+              text " Uplate"]
             ,div[class "mt-5"][
                 table[class "table"][
                     thead[class "thead-dark"][
@@ -97,7 +99,7 @@ view model =
                         th[class "text-center"][text "Ime i Prezime Studenta"],
                         th[class "text-center"][
                             a [ href (Route.toHref Route.Payment__NewPayment)] [
-                            button[class "btn btn-success"][text "Dodaj"]]
+                            button[class "btn btn-success"][Html.i [ Html.Attributes.class "fas fa-plus" ][]]]
                         ]
                     ], viewPayments model,
                       setSum model
@@ -116,11 +118,17 @@ viewPayments model =
             td[] [text (String.fromInt l.vrednostUplate)],
             td[] [text (Utils.Time.formatDate l.date)],
             td[] [text (l.student.firstName ++ " " ++ l.student.lastName )],
-            td[][button[class "btn btn-danger", onClick (ClickedDeletePayment l)][text "Obrisi"]]
+            td[][button[class "btn btn-danger", onClick (ClickedDeletePayment l)][Html.i [ Html.Attributes.class "fas fa-trash" ][]]]
             
             ]) payments)
     Api.Data.Loading ->
-      text "Loading..."
+      tr[][
+      td[][],
+      td[][],
+      div[class "text-center mt-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin" ][]
+      ]
+      ]
     _ ->
       text "Fail"
 
@@ -133,6 +141,6 @@ setSum model =
           td[class "text-center"][text (String.fromInt (List.sum (List.map (\p -> p.vrednostUplate) payments)))]
         ]
     Api.Data.Loading ->
-      text "Loading..."
+      text ""
     _ ->
       text "Fail"

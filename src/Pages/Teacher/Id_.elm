@@ -6,7 +6,6 @@ import Request
 import Shared
 import View exposing (View)
 import UI
-import Shared
 import Html exposing (..)
 import Gen.Route as Route exposing (Route)
 import Html.Attributes exposing (type_, class, disabled, value, style)
@@ -271,7 +270,7 @@ view model =
                     thead[class "thead-dark"][
                         th[class "text-center"][text "Kursevi"],
                         th[class "text-center", style "width" "20%"][
-                            button[class "btn btn-primary", onClick (ChangeState True)][text "Dodaj"]
+                            button[class "btn btn-primary", onClick (ChangeState True)][ Html.i [ Html.Attributes.class "fas fa-plus"][]]
                         ]
                     ], viewCourses model,
                     addCourse model
@@ -323,10 +322,14 @@ viewCourses model =
         (List.map(\c -> tr [class "text-center"][
             td[class "text-center"] [text c.name],  
             td[class "text-center"][button[class "btn btn-danger", onClick (ClickedDeleteCourse c)][
-              text "Obrisi" ]]
+               Html.i [ Html.Attributes.class "fas fa-trash"][] ]]
             ]) courses)
     Api.Data.Loading ->
-      text "Loading..."
+      tr[][
+      div[class "text-center mt-5 ml-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+      ]
+      ]
     _ ->
       text "Fail"
 
@@ -335,18 +338,18 @@ okButton model =
     if  model.firstname == "" || model.lastname == "" || model.teacherRank == "Select Rank"  then
         div[][
             div[][text "Molimo unesite sve podatke!"],
-            button[class "btn btn-success float-right" , disabled True][text "Save"]
+            button[class "btn btn-success float-right" , disabled True][ Html.i [ Html.Attributes.class "fas fa-save"][]]
         ]
     else
         div[][
-            button[class "btn btn-success", onClick SubmittedForm][text "Save"]
+            button[class "btn btn-success", onClick SubmittedForm][ Html.i [ Html.Attributes.class "fas fa-save"][]]
         ]
 
 addButton: Model -> Html Msg
 addButton model = 
     if model.selectedCourse.id == 0 then 
-        button[class "btn btn-success mr-2", disabled True][text "Add"]
+        button[class "btn btn-success mr-2", disabled True][ Html.i [ Html.Attributes.class "fas fa-plus"][]]
     else
-        button[class "btn btn-success mr-2", onClick AddCourse][text "Add"]
+        button[class "btn btn-success mr-2", onClick AddCourse][ Html.i [ Html.Attributes.class "fas fa-plus"][]]
         
         

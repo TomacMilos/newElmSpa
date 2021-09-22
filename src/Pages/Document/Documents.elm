@@ -81,7 +81,9 @@ view model =
       { title = "Dokumenti"
     , body = UI.layout [ div [class "container"] [
             br[][],
-            h2[class "ml"][text "Dokumenta"]
+            h2[class "ml"][
+              Html.i [ Html.Attributes.class "fas fa-file-alt" ][],
+              text " Dokumenta"]
             ,div[class "mt-5"][
                 table[class "table table-striped"][
                     thead[class "thead-dark"][
@@ -89,7 +91,7 @@ view model =
                         th[class "text-center"][text "Ime i Prezime Studenta"],
                         th[class "text-center"][
                           a [ href (Route.toHref Route.Document__NewDocument)] [
-                          button[class "btn btn-success"][text "Dodaj"]]
+                          button[class "btn btn-success"][Html.i [ Html.Attributes.class "fas fa-plus" ][]]]
                         ]
                     ], viewDocuments model
                 ]
@@ -104,10 +106,15 @@ viewDocuments model =
         (List.map(\d -> tr [class "text-center"][
             td[] [text d.naziv],  
             td[] [text (d.student.firstName ++ " " ++ d.student.lastName )],
-            td[][button[class "btn btn-danger", onClick (ClickedDeleteDocument d)][text "Obrisi"]]
+            td[][button[class "btn btn-danger", onClick (ClickedDeleteDocument d)][Html.i [ Html.Attributes.class "fas fa-trash" ][]]]
 
             ]) documents)
     Api.Data.Loading ->
-      text "Loading..."
+      tr[][
+      td[][],
+      div[class "text-center mt-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin" ][]
+      ]
+      ]
     _ ->
       text "Fail"

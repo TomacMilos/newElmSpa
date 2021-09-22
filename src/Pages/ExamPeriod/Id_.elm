@@ -130,11 +130,11 @@ okButton model =
     if  model.name == "" || model.start == "" || model.end == ""  then
         div[][
             div[][text "Molimo unesite sve podatke!"],
-            button[class "btn btn-success float-right" , disabled True][text "Save"]
+            button[class "btn btn-success float-right" , disabled True][Html.i [ Html.Attributes.class "fas fa-save" ][]]
         ]
     else
         div[][
-            button[class "btn btn-success"][text "Save"]
+            button[class "btn btn-success"][Html.i [ Html.Attributes.class "fas fa-save" ][]]
         ]
 
 viewExams : Model -> Html Msg
@@ -146,7 +146,11 @@ viewExams model =
             td[] [text ((studentCardText s.student) ++ " " ++ (studentNameText s.student) ++ " " ++ (Utils.Time.formatDate s.date) )]  
             ]) exams)
     Api.Data.Loading ->
-      text "Loading..."
+      tr[][
+      div[class "text-center mt-5 ml-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+      ]
+      ]
     _ ->
       text "Fail"
 

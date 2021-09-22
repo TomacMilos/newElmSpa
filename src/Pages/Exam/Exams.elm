@@ -84,7 +84,9 @@ view model =
       { title = "Ispiti"
     , body = UI.layout [ div [class "container"] [
             br[][],
-            h2[class "ml"][text "Ispiti"]
+            h2[class "ml"][
+              Html.i [ Html.Attributes.class "fas fa-graduation-cap" ][]
+              ,text " Ispiti"]
             ,div[class "mt-5"][
                 table[class "table table-striped"][
                     thead[class "thead-dark"][
@@ -95,7 +97,7 @@ view model =
                         th[class "text-center"][text "Vreme Odrzavanja Ispita"],
                         th[class "text-center"][text "Ime i Prezime Studenta"],
                         th[class "text-center"][text "Br Indeksa"],
-                        th[class "text-center"][button[class "btn btn-success"][text "Dodaj"]]
+                        th[class "text-center"][button[class "btn btn-success"][Html.i [ Html.Attributes.class "fas fa-plus" ][]]]
                     ], viewExams model
                 ]
             ]
@@ -116,10 +118,17 @@ viewExams model =
             td[] [text (studentNameText e.student)],
             td[] [text (studentCardText e.student)],
 
-            td[][button[class "btn btn-danger", onClick (ClickedDeleteExams e)][text "Obrisi"]]
+            td[][button[class "btn btn-danger", onClick (ClickedDeleteExams e)][Html.i [ Html.Attributes.class "fas fa-trash" ][]]]
             ]) exams)
     Api.Data.Loading ->
-      text "Loading..."
+      tr[][
+      td[][],
+      td[][],
+      td[][],
+      div[class "text-center mt-5 ml-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin ml-5" ][]
+      ]
+      ]
     _ ->
       text "Fail"
 

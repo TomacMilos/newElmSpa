@@ -90,7 +90,9 @@ view model =
       { title = "Novi Kurs"
     , body = UI.layout [ div [class "container"] [
             br[][],
-            h2[class "ml"][text "Kurs"]
+            h2[class "ml"][
+              Html.i [ Html.Attributes.class "fas fa-chalkboard-teacher" ][],
+                text " Kurs"]
             ,div[class "mt-5"][
                 div[class "form-group"][
                     label[][text "Naziv Kursa"],
@@ -107,14 +109,14 @@ okButton : Model -> Html Msg
 okButton model =
     if  model.name == ""  then
         div[][
-            button[class "btn btn-success mr-2" , disabled True][text "Ok"],
-            a [ href (Route.toHref Route.Document__NewDocument)] [
-            button[class "btn btn-primary" ][text "Cancel"]],
+            button[class "btn btn-success mr-2" , disabled True][Html.i [ Html.Attributes.class "fas fa-save" ][]],
+            a [ href (Route.toHref Route.Course__Courses)] [
+            button[class "btn btn-primary" ][Html.i [ Html.Attributes.class "fas fa-times" ][]]],
             div[][text "Molimo unesite sve podatke!"]
         ]
     else
         div[][
-            button[class "btn btn-success mr-2", onClick SubmittedForm][text "Ok"],
-            a [ href (Route.toHref Route.Document__NewDocument)] [
-            button[class "btn btn-primary" ][text "Cancel"]]
+            button[class "btn btn-success mr-2", onClick SubmittedForm][Html.i [ Html.Attributes.class "fas fa-save" ][]],
+            a [ href (Route.toHref Route.Course__Courses)] [
+            button[class "btn btn-primary" ][Html.i [ Html.Attributes.class "fas fa-times" ][]]]
         ]

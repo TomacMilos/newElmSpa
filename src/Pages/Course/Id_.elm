@@ -172,7 +172,7 @@ view model =
                         th[class "text-center"][text "Zavrsetak Kursa"],
                         th[class "text-center"][
                           a [ href (Route.toHref (Route.Course__NewEnrollment__Id_ { id = model.id }))] [
-                            button[class "btn btn-success"][text "Dodaj"]]
+                            button[class "btn btn-success"][Html.i [ Html.Attributes.class "fas fa-plus" ][]]]
                         ]
                     ], viewEnrollments model
                 ]
@@ -192,10 +192,16 @@ viewEnrollments model =
             td[] [text (Utils.Time.formatDate s.endDate)],
 
             td[][button[class "btn btn-danger", onClick (ClickedDeleteEnrollment s)][
-              text "Obrisi" ]]
+              Html.i [ Html.Attributes.class "fas fa-trash" ][] ]]
             ]) enrollments)
     Api.Data.Loading ->
-      text "Loading..."
+        tr[][
+            td[][],
+            td[][],
+            div[class "text-center mt-5"][
+              Html.i [ Html.Attributes.class "fas fa-circle-notch fa-5x fa-spin" ][]
+        ]
+        ]
     _ ->
       text "Fail"
 
@@ -205,10 +211,10 @@ okButton model =
     if  model.name == ""  then
         div[][
             div[][text "Molimo unesite sve podatke!"],
-            button[class "btn btn-success float-right" , disabled True][text "Save"]
+            button[class "btn btn-success float-right" , disabled True][Html.i [ Html.Attributes.class "fas fa-save" ][]]
         ]
 
     else
         div[][
-            button[class "btn btn-success", onClick SubmittedForm][text "Save"]
+            button[class "btn btn-success", onClick SubmittedForm][Html.i [ Html.Attributes.class "fas fa-save" ][]]
         ]
